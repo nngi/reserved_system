@@ -1,0 +1,678 @@
+//*********************
+// 変数定義
+//*********************
+/* ちょっとクールっぽい黒基調のデザイン試作 */
+/*
+@import url('https://fonts.googleapis.com/css?family=Lato');
+$font-family: "Lato", "メイリオ", Verdana, Geneva, sans-serif;
+$bg: #444;
+$font: white;
+$border: #777;
+$border2: #666;
+$border-focus: #fa0;
+$input-font: black;
+$input-bg: #333;
+$input-border: 1px solid $border;
+$menu-header: #58d;
+$menu-header-font: white;
+$dg-header: $bg;
+$dg-header-font: #5d8;
+$dg-header-font-hover: white;
+$highlight: #fa0;
+$sun: #d55;
+$sat: #6af;
+$other: $font;
+$today: $highlight;
+$button: #333;
+$button-hover: #666;
+$button-font: #fff;
+$button-font-hover: $highlight;
+$required: #d55;
+$reserved-bg: rgba(100, 150, 255, 0.5);
+$radius: 0px;
+$font-bold: 700;
+$schedule-header: $bg;
+$col-width: 200px;
+$row-height: 60px;
+*/
+/* 標準のデザイン */
+@import url('https://fonts.googleapis.com/css?family=Lato');
+$font-family: "Lato", "メイリオ", Verdana, Geneva, sans-serif;
+$bg: white;
+$font: black;
+$border: #ddd;
+$border2: #eee;
+$border-focus: #fa0;
+$input-font: black;
+$input-bg: white;
+$input-border: 1px solid $border;
+$menu-header: #58d;
+$menu-header-font: white;
+$dg-header: #5d8;
+$dg-header-font: black;
+$dg-header-font-hover: white;
+$disabled-font: #333;
+$highlight: #fa0;
+$sun: red;
+$sat: blue;
+$other: $font;
+$today: $highlight;
+$button: #bbb;
+$button-hover: #ccc;
+$button-font: $font;
+$button-font-hover: $highlight;
+$required: red;
+$reserved-bg: rgba(136, 136, 255, 0.5);
+$radius: 15px;
+$font-bold: 700;
+$schedule-header: $bg;
+$col-width: 200px;
+$row-height: 60px;
+
+$scrollbar-width: 17px;
+$header-height: 50px;
+$schedule-header-height: 50px;
+$fixed-height: $header-height + $schedule-header-height;
+$fixed-width: 70px;
+$header-color: #D3DCE6;
+$margin-header: 10px;
+
+/*
+::-webkit-scrollbar-thumb {
+  background-color: #555;
+}
+::-webkit-scrollbar {
+  background-color: #555;
+}
+*/
+
+//*********************
+// 全体の設定
+//*********************
+// フォント、文字色、背景色
+body {
+  height: 100%;
+  background-color: $bg;
+  color: $font;
+  font-family: $font-family;
+}
+// ラジオボタンのズレをなくす
+input[type=radio], input[type=checkbox] {
+  margin: 0px;
+}
+label {
+  margin-bottom: 0px;
+}
+// 入力項目の見た目を合わせる
+input[type="text"], textarea, select {
+  color: $input-font;
+  background-color: $input-bg;
+  border: $input-border;
+  height: 24px;
+  padding: 0px 4px;
+}
+input[type="text"] {
+  height: 24px;
+  padding: 0px 4px;
+}
+select {
+  height: 24px;
+  // プルダウンを消す
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 10px;
+}
+/* フォーカス時のデザインは要検討
+input[type="text"]:focus, textarea:focus, select:focus {
+  outline: 0px;
+  border-color: $border-focus;
+}
+*/
+// IEはappearance非対応のため、この方法でプルダウンの矢印を消す
+::-ms-expand {
+ display: none;
+}
+// IEのテキストボックスの×ボタンを消す
+::-ms-clear {
+  display: none;
+}
+// bootstrapで二重テーブルはなぜか背景色が固定されているため親継承
+.table {
+  margin-bottom: 0px;
+  .table {
+    background-color: $bg;
+  }
+}
+// Laravelのナビゲーションバー
+.navbar {
+  height: $header-height;
+  margin-bottom: $margin-header;
+}
+
+//*********************
+// 高さを目一杯使う
+//*********************
+html {
+  height: 100%;
+}
+body {
+  height: 100%;
+}
+// app.blade.php
+#app {
+  height: 100%;
+}
+// App.vue
+#app-vue {
+  height: calc(100% - #{$header-height} - #{$margin-header}); // Laravelのナビゲーションバー部の分減らす
+}
+// Main.vue
+div.main {
+  height: 100%;
+  >div.container-fluid {
+    height: 100%;
+    >div#main-body {
+      height: 100%;
+      > .main-content {
+        height: calc(100% - #{$margin-header});
+      }
+    }
+  }
+}
+
+//*********************
+// ログイン画面、新規登録画面共通
+//*********************
+.login,
+.register {
+  margin: 15px auto;
+  width: 300px;
+  padding: 20px;
+  border: 1px solid $border;
+  border-radius: 10px;
+  >div {
+    margin-bottom: 10px;
+  }
+  >div:last-child {
+    margin-bottom: 0px;
+  }
+  .el-button--text {
+    padding: 0px;
+  }
+  .el-input__inner {
+    height: 35px;
+    padding: 3px 10px;
+  }
+}
+
+//*********************
+// カレンダー
+//*********************
+.calender {
+  /*
+  .container {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+  */
+  // 年月のヘッダ
+  .calender-year-month {
+    border: 1px solid $border;
+    background-color: $menu-header;
+    color: $menu-header-font;
+    padding: 3px 10px;
+    // 先月、来月ボタン
+    button {
+      border: none;
+      background: none;
+    }
+  }
+  // カレンダーのテーブル
+  .calender-frame {
+    background-color: $bg;
+    color: $font;
+    // ヘッダ（曜日）
+    .calender-header {
+      border-top: none;
+      border-left: 1px solid $border;
+      border-right: 1px solid $border;
+      border-bottom: none;
+      text-align: center;
+      border-bottom-width: 2px;
+      padding: 3px;
+    }
+    // 日付
+    .calender-day {
+      border: 1px solid $border;
+      text-align: right;
+      padding: 3px;
+    }
+    // 各曜日
+    .weekday-mon,
+    .weekday-tue,
+    .weekday-wed,
+    .weekday-thu,
+    .weekday-fri {
+      color: $other;
+    }
+    .weekday-sat {
+      color: $sat;
+    }
+    .weekday-sun {
+      color: $sun;
+    }
+    // 当日を強調表示
+    .today {
+      background-color: $today;
+      font-weight: $font-bold;
+    }
+  }
+}
+
+//*********************
+// メニュー
+//*********************
+.side-menu {
+  // メニューのヘッダ
+  .menu-header {
+    background-color: $menu-header;
+    color: $menu-header-font;
+    padding: 3px 10px;
+    border: 1px solid $border;
+  }
+  // メニューのボディ
+  .menu-body {
+    padding: 10px;
+    border-top: none;
+    border-right: 1px solid $border;
+    border-left: 1px solid $border;
+    border-bottom: 1px solid $border;
+    text-align: center;
+    div {
+      margin-bottom: 10px;
+      .el-button {
+        width: 90%;
+      }
+    }
+    div:last-child {
+      margin-bottom: 0px;
+    }
+  }
+  // 空行
+  .empty-row {
+    height: 30px;
+  }
+}
+
+//*********************
+// ダイアログ（共通）
+//*********************
+/* ウィンドウ幅が768px以上の場合に適用するCSS */
+@media screen and ( min-width:768px )
+{
+  .el-dialog {
+    width: 70%;
+    margin-top: 20px!important;
+    margin-bottom: 0px;
+  }
+}
+/* ウィンドウ幅が767px以下の場合に適用するCSS */
+@media screen and ( max-width:767px )
+{
+  // スマホサイズの場合は全画面とする
+  .el-dialog {
+    width: 100%;
+    margin-top: 0px!important;
+    margin-bottom: 0px;
+  }
+}
+.dialog {
+  // モーダル表示用マスク
+  .modal-mask {
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .5);
+    display: table;
+    transition: opacity .3s ease;
+    .modal-wrapper {
+      /*
+      display: table-cell;
+      vertical-align: middle;
+      */
+      // ダイアログコンテナ
+      .modal-container {
+        background-color: $bg;
+        border-radius: 0px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+        transition: all .3s ease;
+        position: absolute;
+        // ダイアログのヘッダ
+        .modal-header {
+          background-color: $dg-header;
+          color: $dg-header-font;
+          padding: 10px;
+          border-bottom: 1px solid $border;
+          // ヘッダのボタン
+          .modal-header-button {
+            float: right;
+            background: none;
+            border: none;
+          }
+          .modal-header-button:hover {
+            color: $dg-header-font-hover;
+          }
+        }
+        // ダイアログのボディ
+        .modal-body {
+          padding: 10px;
+        }
+        // ダイアログのフッタ
+        .modal-footer {
+          padding: 10px;
+          border-top: 1px solid $border;
+          text-align: right;
+          // フッタのボタン
+          .modal-footer-button {
+            float: right;
+            background-color: $button;
+            color: $button-font;
+            border: none;
+            width: 120px;
+            height: 30px;
+            margin-left: 10px;
+            // 
+            span {
+              margin-right: 5px;
+            }
+          }
+          .modal-footer-button:hover {
+            background-color: $button-hover;
+            color: $highlight;
+          }
+        }
+      }
+    }
+  }
+}
+
+//*********************
+// 予約ダイアログ
+//*********************
+#reserve-dialog {
+  .container-fluid {
+    .row {
+      padding-bottom: 10px;
+      .detail-midashi {
+        font-weight: $font-bold;
+      }
+      .detail-midashi::after {
+        content: "：";
+      }
+      .detail-fixed {
+        font-weight: $font-bold;
+      }
+      .detail-required {
+        color: $required;
+      }
+      .detail-fit {
+        width: 100%;
+      }
+      textarea {
+        height: 100%;
+        resize: vertical;
+      }
+      .detail-table > tr > td {
+        padding-bottom: 10px;
+      }
+      .el-date-picker {
+        width: 200px;
+      }
+    }
+    .row:last-child {
+      margin-bottom: 0px;
+    }
+  }
+}
+
+//*********************
+// スケジュール
+//*********************
+.schedule {
+  position: absolute;
+  height: 100%;
+  width: calc(100% - 30px);
+  .tg-col {
+    height: 100%;
+    width: $col-width;
+    box-sizing: border-box;
+    position: relative;
+    background: linear-gradient($border 1px, transparent 1.5px), linear-gradient($border2 1px, transparent 1.5px);
+    line-height: 1px;
+  }
+  #table-schedule-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    #table-fixed-column-wrapper {
+      position: absolute;
+      top: $schedule-header-height;
+      height: calc(100% - #{$scrollbar-width} - #{$schedule-header-height}); // ヘッダ50px、スクロールバー
+      overflow: hidden;
+      #table-time {
+        table-layout: fixed;
+        background-color: $bg;
+        border-right: 1px solid $border;
+        z-index: 1;
+        th {
+          height: $schedule-header-height;
+        }
+        td {
+          padding: 0px;
+          border-bottom: 1px solid $border;
+          border-right: 1px solid $border;
+          box-sizing: border-box;
+        }
+        .td-time {
+          background: linear-gradient($border 1px, transparent 1px), linear-gradient($border2 1px, transparent 1px);
+          background-position-y: 59px, 29px;
+          background-size: 100% 60px, 100% 30px;
+        }
+        .tg-time {
+          vertical-align: middle;
+          text-align: right;
+          border-left: 1px solid $border;
+          padding-right: 2px;
+          box-sizing: border-box;
+          height: $row-height;
+          background-color: $schedule-header;
+        }
+        .tg-time:first-child {
+          border-top: 1px solid $border;
+        }
+        .tg-time:last-child {
+          border-bottom: none;
+          width: $fixed-width;
+        }
+        .td-time-allday {
+          border-top: 1px solid #ddd;
+          border-left: 1px solid #ddd;
+          border-right: 1px solid #ddd;
+          border-bottom: none;
+          vertical-align: top;
+          .tg-time-allday {
+            text-align: right;
+          }
+        }
+      }
+    }
+    #table-fixed-header-wrapper {
+      position: absolute;
+      left: $fixed-width;
+      width: calc(100% - #{$scrollbar-width} - #{$fixed-width} + 1px);
+      overflow: hidden;
+      #table-header {
+        table-layout: fixed;
+        background-color: $bg;
+        border-bottom: 1px solid $border;
+        z-index: 1;
+        left: $fixed-width;
+        td {
+          border-top: 1px solid #ddd;
+          border-right: 1px solid #ddd;
+          background-color: $bg;
+          height: $schedule-header-height;
+          .schedule-header {
+            width: $col-width;
+            text-align: center;
+            box-sizing: border-box;
+            padding: 10px 10px;
+          }
+        }
+        td:first-child {
+          border-left: 1px solid #ddd;
+        }
+        td:first-child {
+          border-left: 1px solid #ddd;
+        }
+      }
+    }
+    #table-body-wrapper {
+      position: relative;
+      width: calc(100% - #{$fixed-width});
+      height: calc(100% - #{$schedule-header-height} - #{$scrollbar-width});
+      overflow: auto;
+      left: $fixed-width + 1px; // ボーダー分1px加算
+      top: $schedule-header-height;
+      #table-schedule {
+        table-layout: fixed;
+        position: relative;
+        td {
+          padding: 0px;
+          border-bottom: 1px solid $border;
+          border-right: 1px solid $border;
+          box-sizing: border-box;
+        }
+        .td-col-allday {
+          .tg-col-allday {
+            height: 100%;
+            .reserved-time-allday {
+              padding: 0px 5px;
+            }
+          }
+        }
+      }
+    }
+  }
+  .reserved-time {
+    width: 100%;
+    height: 30px;
+    position: absolute;
+    background-color: $reserved-bg;
+    left: 0px;
+    box-sizing: border-box;
+    overflow: overlay;
+    padding: 5px;
+    line-height: 1.4em;
+    overflow: hidden;
+  }
+  .reserved-time.start {
+    border-top-left-radius: $radius;
+    border-top-right-radius: $radius;
+  }
+  .reserved-time.end {
+    border-bottom-left-radius: $radius;
+    border-bottom-right-radius: $radius;
+  }
+}
+
+//*********************
+// ElementUI
+//*********************
+.el-dialog__body {
+  padding: 5px 5px;
+}
+.el-dialog__header {
+  padding: 15px 15px 0;
+}
+.el-input__icon {
+  line-height: 24px;
+}
+.el-textarea__inner {
+  padding: 4px;
+}
+.el-checkbox {
+  vertical-align: top;
+}
+.el-checkbox.is-bordered.el-checkbox--small {
+  padding: 5px 9px 5px 9px;
+}
+.el-select input {
+  height: 34px;
+}
+/*
+.el-picker-panel {
+  background-color: $bg!important;
+  border-color: $border!important;
+  box-shadow: 0 2px 6px #444!important;
+}
+.el-picker-panel__footer {
+  background-color: $bg!important;
+}
+.el-date-picker__time-header,
+.el-picker-panel__footer,
+.el-picker-panel__btn
+{
+  border-color: $border!important;
+}
+.el-date-table td.next-month,
+.el-date-table td.prev-month {
+  color: $disabled-font!important;
+}
+.el-input__inner,
+.el-textarea__inner,
+.el-date-table,
+.el-picker-panel__btn,
+.el-picker-panel__link-btn,
+.el-picker-panel__icon-btn,
+.el-date-picker__header-label,
+.el-date-table th,
+.el-date-table td.today,
+.el-month-table td .cell,
+.el-year-table td .cell {
+  color: $font!important;
+}
+.el-input__inner:hover
+.el-input__inner:focus,
+.el-picker-panel,
+.el-picker-panel__link-btn:hover,
+.el-picker-panel__icon-btn:hover,
+.el-date-picker__header-label:hover {
+  color: $highlight!important;
+}
+.el-input__inner,
+.el-textarea__inner {
+  background-color: $input-bg!important;
+  border-color: $border!important;
+}
+.el-date-table td.available:hover,
+.el-year-table td .cell:hover,
+.el-month-table td .cell:hover,
+.el-date-table td.current:not(.disabled),
+.el-year-table td.current:not(.disabled) .cell,
+.el-month-table td.current:not(.disabled) .cell {
+  background-color: $highlight!important;
+}
+.el-date-table td.today:before {
+  border-top-color: $highlight!important;
+}
+.el-select-dropdown.is-multiple .el-select-dropdown__item.selected.hover,
+.el-select-dropdown__item.hover,
+.el-select-dropdown__item:hover {
+  background-color: $highlight;
+}*/
